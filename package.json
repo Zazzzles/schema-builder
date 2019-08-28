@@ -1,0 +1,23 @@
+{
+  "name": "schemabuilder",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "parcel ./index.html --open",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ras Brits",
+  "license": "MIT",
+  "dependencies": {
+    "@babel/core": "^7.5.5",
+    "@babel/plugin-proposal-class-properties": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/preset-react": "^7.0.0",
+    "parcel-bundler": "^1.12.3",
+    "react": "^16.9.0",
+    "react-dom": "^16.9.0",
+    "react-dropdown": "^1.6.4",
+    "react-select": "^3.0.4"
+  }
+}

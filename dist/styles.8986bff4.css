@@ -1,0 +1,33 @@
+html, body{
+    height: 100%;
+    width: 100%;
+    margin: 0px;
+}
+
+#app{
+    height: 100%;
+    width: 100%;
+}
+
+.main-wrapper{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #bbbbbb;
+}
+
+.inner-wrapper{
+    height: 800px;
+    width: 800px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 1px 1px 20px 0px #00000045
+}
+
+/*  -----------------  */
+
+
+
+/*# sourceMappingURL=/styles.8986bff4.css.map */
