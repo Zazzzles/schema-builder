@@ -39563,6 +39563,20 @@ function (_Component) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(App).call(this, props));
 
+    _defineProperty(_assertThisInitialized(_this), "mapSchema", function (properties, id, mutatorFunc) {
+      Object.keys(properties).forEach(function (propertyKey) {
+        var propertyItem = properties[propertyKey];
+
+        if (propertyItem.uuid === id) {
+          mutatorFunc(propertyItem);
+        } else {
+          if (propertyItem.type === "object") {
+            _this.mapSchema(propertyItem.properties, id, mutatorFunc);
+          }
+        }
+      });
+    });
+
     _defineProperty(_assertThisInitialized(_this), "renderInnerObjects", function (schemaObj, key) {
       var toRender = [];
 
@@ -39646,24 +39660,11 @@ function (_Component) {
     });
 
     _defineProperty(_assertThisInitialized(_this), "addNewField", function (properties) {
+      console.log(properties);
       properties[Object.keys(properties).length] = {
         type: 'string',
         uuid: _this.uuid()
       };
-    });
-
-    _defineProperty(_assertThisInitialized(_this), "checkObject", function (properties, id) {
-      Object.keys(properties).forEach(function (propertyKey) {
-        var propertyItem = properties[propertyKey];
-
-        if (propertyItem.type === 'object') {
-          if (propertyItem.uuid === id) {
-            _this.addNewField(propertyItem.properties);
-          } else {
-            _this.checkObject(propertyItem.properties, id);
-          }
-        }
-      });
     });
 
     _defineProperty(_assertThisInitialized(_this), "onAddInnerField", function (id) {
@@ -39672,17 +39673,17 @@ function (_Component) {
       if (schema.uuid === id && schema.type === 'object') {
         _this.addNewField(schema.properties);
       } else {
-        Object.keys(schema.properties).forEach(function (propertyKey) {
-          var propertyItem = schema.properties[propertyKey];
+        _this.mapSchema(schema.properties, id, _this.addNewField); // Object.keys(schema.properties).forEach(propertyKey => {
+        //   let propertyItem = schema.properties[propertyKey]
+        //   if(propertyItem.type === 'object'){
+        //     if(propertyItem.uuid === id){
+        //       this.addNewField(propertyItem.properties)
+        //     }else{
+        //       this.checkObject(propertyItem.properties, id)
+        //     }
+        //   }
+        // })
 
-          if (propertyItem.type === 'object') {
-            if (propertyItem.uuid === id) {
-              _this.addNewField(propertyItem.properties);
-            } else {
-              _this.checkObject(propertyItem.properties, id);
-            }
-          }
-        });
       }
 
       _this.setState({
@@ -39801,8 +39802,7 @@ function (_Component) {
       }
     };
     return _this;
-  } //  OBJECT RENDERING 
-
+  }
 
   _createClass(App, [{
     key: "render",

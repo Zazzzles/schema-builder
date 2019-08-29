@@ -105,6 +105,19 @@ export default class App extends Component {
   }
 
 
+  mapSchema = (properties, id, mutatorFunc) => {
+    Object.keys(properties).forEach(propertyKey => {
+      let propertyItem = properties[propertyKey];
+      if (propertyItem.uuid === id) {
+        mutatorFunc(propertyItem)
+      } else {
+        if (propertyItem.type === "object") {
+          this.mapSchema(propertyItem.properties, id, mutatorFunc);
+        }
+      }
+    });
+  }
+
 
   //  OBJECT RENDERING 
 
@@ -221,40 +234,42 @@ export default class App extends Component {
   //  ADD INNER FIELD
 
   addNewField = (properties) => {
-    properties[Object.keys( properties).length] = {
+    console.log(properties)
+    properties[Object.keys(properties).length] = {
       type: 'string',
       uuid: this.uuid()
     }
   }
 
-  checkObject = (properties, id) => {
-    Object.keys(properties).forEach(propertyKey => {
-        let propertyItem = properties[propertyKey]
-        if(propertyItem.type === 'object'){
-          if(propertyItem.uuid === id){
-            this.addNewField(propertyItem.properties)
-          }else{
-            this.checkObject(propertyItem.properties, id)
-          }
-        }
-    })
-  }
+  // checkObject = (properties, id) => {
+  //   Object.keys(properties).forEach(propertyKey => {
+  //       let propertyItem = properties[propertyKey]
+  //       if(propertyItem.type === 'object'){
+  //         if(propertyItem.uuid === id){
+  //           this.addNewField(propertyItem.properties)
+  //         }else{
+  //           this.checkObject(propertyItem.properties, id)
+  //         }
+  //       }
+  //   })
+  // }
 
   onAddInnerField = (id) => {
     let { schema } = this.state
     if(schema.uuid === id && schema.type === 'object'){
       this.addNewField(schema.properties)
     }else{
-      Object.keys(schema.properties).forEach(propertyKey => {
-        let propertyItem = schema.properties[propertyKey]
-        if(propertyItem.type === 'object'){
-          if(propertyItem.uuid === id){
-            this.addNewField(propertyItem.properties)
-          }else{
-            this.checkObject(propertyItem.properties, id)
-          }
-        }
-      })
+      this.mapSchema(schema.properties, id, this.addNewField)
+      // Object.keys(schema.properties).forEach(propertyKey => {
+      //   let propertyItem = schema.properties[propertyKey]
+      //   if(propertyItem.type === 'object'){
+      //     if(propertyItem.uuid === id){
+      //       this.addNewField(propertyItem.properties)
+      //     }else{
+      //       this.checkObject(propertyItem.properties, id)
+      //     }
+      //   }
+      // })
     }
     this.setState({schema})
   }
@@ -366,7 +381,7 @@ export default class App extends Component {
 
   onDelete = (id) => {
     console.log('Delete')
-    
+
   }
 
 
