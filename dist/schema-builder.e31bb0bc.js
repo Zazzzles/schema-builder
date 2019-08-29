@@ -39549,26 +39549,30 @@ function (_Component) {
 
     _defineProperty(_assertThisInitialized(_this), "renderInnerObjects", function (schemaObj, key) {
       var toRender = [];
-      Object.keys(schemaObj.properties).forEach(function (key, index) {
-        var schemaItem = schemaObj.properties[key];
 
-        if (schemaItem.type !== "object") {
-          toRender.push(_react.default.createElement(_SchemaLevel.default, {
-            type: schemaItem.type,
-            name: key,
-            id: schemaItem.uuid,
-            key: key + index,
-            onAddField: _this.onAddInnerField,
-            onSetFieldType: _this.onSetFieldType,
-            onKeyUpdate: _this.onKeyUpdate
-          }));
-        } else {
-          toRender.push(_this.renderSchemaObject(schemaItem, key));
-        }
-      });
+      if (schemaObj.properties) {
+        Object.keys(schemaObj.properties).forEach(function (key, index) {
+          var schemaItem = schemaObj.properties[key];
+
+          if (schemaItem.type !== "object") {
+            toRender.push(_react.default.createElement(_SchemaLevel.default, {
+              type: schemaItem.type,
+              name: key,
+              id: schemaItem.uuid,
+              key: key + index,
+              onAddField: _this.onAddInnerField,
+              onSetFieldType: _this.onSetFieldType,
+              onKeyUpdate: _this.onKeyUpdate
+            }));
+          } else {
+            toRender.push(_this.renderSchemaObject(schemaItem, key));
+          }
+        });
+      }
+
       return _react.default.createElement(_SchemaLevel.default, {
-        type: "object",
-        name: key,
+        type: schemaObj.type,
+        name: 'root',
         id: schemaObj.uuid,
         onAddField: _this.onAddInnerField,
         onSetFieldType: _this.onSetFieldType,
@@ -39583,6 +39587,7 @@ function (_Component) {
     });
 
     _defineProperty(_assertThisInitialized(_this), "updateKey", function (properties, name, propertyKey) {
+      console.log(properties);
       Object.defineProperty(properties, name, Object.getOwnPropertyDescriptor(properties, propertyKey));
       delete properties[propertyKey];
     });
@@ -39624,9 +39629,8 @@ function (_Component) {
 
     _defineProperty(_assertThisInitialized(_this), "addNewField", function (properties) {
       properties[Object.keys(properties).length] = {
-        type: 'object',
-        uuid: _this.uuid(),
-        properties: {}
+        type: 'string',
+        uuid: _this.uuid()
       };
     });
 
@@ -39646,17 +39650,22 @@ function (_Component) {
 
     _defineProperty(_assertThisInitialized(_this), "onAddInnerField", function (id) {
       var schema = _this.state.schema;
-      Object.keys(schema.properties).forEach(function (propertyKey) {
-        var propertyItem = schema.properties[propertyKey];
 
-        if (propertyItem.type === 'object') {
-          if (propertyItem.uuid === id) {
-            _this.addNewField(propertyItem.properties);
-          } else {
-            _this.checkObject(propertyItem.properties, id);
+      if (schema.uuid === id && schema.type === 'object') {
+        _this.addNewField(schema.properties);
+      } else {
+        Object.keys(schema.properties).forEach(function (propertyKey) {
+          var propertyItem = schema.properties[propertyKey];
+
+          if (propertyItem.type === 'object') {
+            if (propertyItem.uuid === id) {
+              _this.addNewField(propertyItem.properties);
+            } else {
+              _this.checkObject(propertyItem.properties, id);
+            }
           }
-        }
-      });
+        });
+      }
 
       _this.setState({
         schema: schema
@@ -39664,18 +39673,24 @@ function (_Component) {
     });
 
     _defineProperty(_assertThisInitialized(_this), "updateType", function (propertyItem, type) {
-      if (propertyItem.type === 'object') {
+      console.log(propertyItem);
+
+      if (propertyItem.type === 'object' && type !== 'object') {
         delete propertyItem.properties;
         propertyItem.type = type;
       } else {
-        propertyItem.type = type;
+        if (type === 'object') {
+          propertyItem.type = type;
+          propertyItem.properties = {};
+        } else {
+          propertyItem.type = type;
+        }
       }
     });
 
     _defineProperty(_assertThisInitialized(_this), "checkObjectType", function (properties, id, type) {
       Object.keys(properties).forEach(function (propertyKey) {
         var propertyItem = properties[propertyKey];
-        console.log(propertyKey);
 
         if (propertyItem.uuid === id) {
           _this.updateType(propertyItem, type);
@@ -39690,17 +39705,22 @@ function (_Component) {
     _defineProperty(_assertThisInitialized(_this), "onSetFieldType", function (id, type) {
       console.log("Updating type");
       var schema = _this.state.schema;
-      Object.keys(schema.properties).forEach(function (propertyKey) {
-        var propertyItem = schema.properties[propertyKey];
 
-        if (propertyItem.uuid === id) {
-          _this.updateType(propertyItem, type);
-        } else {
-          if (propertyItem.type === 'object') {
-            _this.checkObjectType(propertyItem.properties, id, type);
+      if (schema.uuid === id) {
+        _this.updateType(schema, type);
+      } else {
+        Object.keys(schema.properties).forEach(function (propertyKey) {
+          var propertyItem = schema.properties[propertyKey];
+
+          if (propertyItem.uuid === id) {
+            _this.updateType(propertyItem, type);
+          } else {
+            if (propertyItem.type === 'object') {
+              _this.checkObjectType(propertyItem.properties, id, type);
+            }
           }
-        }
-      });
+        });
+      }
 
       _this.setState({
         schema: schema
@@ -39755,21 +39775,7 @@ function (_Component) {
       schema: {
         type: "object",
         uuid: _this.bottomLevelUUID,
-        properties: {
-          test: {
-            type: 'string',
-            uuid: '1A789BB9-068F-4868-8C57-3CDBB6114596'
-          },
-          anotherTest: {
-            type: 'string',
-            uuid: '0821FB5B-6F0C-40E5-B617-32DB041495B0'
-          },
-          yetAnotherTest: {
-            type: 'object',
-            uuid: '0913EFA8-D3A2-43C6-8A38-DF6EAE1888B4',
-            properties: {}
-          }
-        }
+        properties: {}
       }
     };
     return _this;
@@ -39834,7 +39840,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60920" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55151" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

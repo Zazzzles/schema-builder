@@ -97,21 +97,7 @@ export default class App extends Component {
         type: "object",
         uuid: this.bottomLevelUUID,
         properties: {
-          test: {
-            type: 'string',
-            uuid: '1A789BB9-068F-4868-8C57-3CDBB6114596'
-          },
-          anotherTest: {
-            type: 'string',
-            uuid: '0821FB5B-6F0C-40E5-B617-32DB041495B0'
-          },
-          yetAnotherTest: {
-            type: 'object',
-            uuid: '0913EFA8-D3A2-43C6-8A38-DF6EAE1888B4',
-            properties: {
-
-            }
-          }
+         
         }
       }
     }
@@ -124,19 +110,22 @@ export default class App extends Component {
 
   renderInnerObjects = (schemaObj, key) => {
     let toRender = []
-    Object.keys(schemaObj.properties).forEach((key, index) => {
-      let schemaItem = schemaObj.properties[key]
-      if (schemaItem.type !== "object") {
-        toRender.push(<SchemaLevel type={schemaItem.type} name={key} id={schemaItem.uuid} key={key + index} onAddField={this.onAddInnerField} onSetFieldType={this.onSetFieldType} onKeyUpdate={this.onKeyUpdate} />)
-      } else {
-        toRender.push(this.renderSchemaObject(schemaItem, key))
-      }
-    })
-    return (
-      <SchemaLevel type={"object"} name={key} id={schemaObj.uuid} onAddField={this.onAddInnerField} onSetFieldType={this.onSetFieldType} onKeyUpdate={this.onKeyUpdate}>
-        {toRender}
-      </SchemaLevel>
-    )
+    if(schemaObj.properties){
+      Object.keys(schemaObj.properties).forEach((key, index) => {
+        let schemaItem = schemaObj.properties[key]
+        if (schemaItem.type !== "object") {
+          toRender.push(<SchemaLevel type={schemaItem.type} name={key} id={schemaItem.uuid} key={key + index} onAddField={this.onAddInnerField} onSetFieldType={this.onSetFieldType} onKeyUpdate={this.onKeyUpdate} />)
+        } else {
+          toRender.push(this.renderSchemaObject(schemaItem, key))
+        }
+      })
+    }
+      return (
+        <SchemaLevel type={schemaObj.type} name={'root'} id={schemaObj.uuid} onAddField={this.onAddInnerField} onSetFieldType={this.onSetFieldType} onKeyUpdate={this.onKeyUpdate}>
+          {toRender}
+        </SchemaLevel>
+      )
+   
   }
 
   renderSchemaObject = (schemaObj, name) => {
@@ -161,6 +150,7 @@ export default class App extends Component {
   //  KEY UPDATE
 
   updateKey = (properties, name, propertyKey) => {
+    console.log(properties)
     Object.defineProperty(properties, name,
       Object.getOwnPropertyDescriptor(properties, propertyKey));
     delete properties[propertyKey];
@@ -210,9 +200,8 @@ export default class App extends Component {
 
   addNewField = (properties) => {
     properties[Object.keys( properties).length] = {
-      type: 'object',
-      uuid: this.uuid(),
-      properties: {}
+      type: 'string',
+      uuid: this.uuid()
     }
   }
 
@@ -231,17 +220,21 @@ export default class App extends Component {
 
   onAddInnerField = (id) => {
     let { schema } = this.state
-    Object.keys(schema.properties).forEach(propertyKey => {
-      let propertyItem = schema.properties[propertyKey]
-      if(propertyItem.type === 'object'){
-        if(propertyItem.uuid === id){
-          this.addNewField(propertyItem.properties)
-        }else{
-          this.checkObject(propertyItem.properties, id)
+    if(schema.uuid === id && schema.type === 'object'){
+      this.addNewField(schema.properties)
+    }else{
+      Object.keys(schema.properties).forEach(propertyKey => {
+        let propertyItem = schema.properties[propertyKey]
+        if(propertyItem.type === 'object'){
+          if(propertyItem.uuid === id){
+            this.addNewField(propertyItem.properties)
+          }else{
+            this.checkObject(propertyItem.properties, id)
+          }
         }
-      }
-    })
-     this.setState({schema})
+      })
+    }
+    this.setState({schema})
   }
 
 
@@ -251,21 +244,31 @@ export default class App extends Component {
 
 
 
+
+
+
+
+
   //  SET FIELD TYPE
 
   updateType = (propertyItem, type) => {
-    if(propertyItem.type === 'object'){
-      delete propertyItem.properties
-      propertyItem.type = type
+    console.log(propertyItem)
+    if(propertyItem.type === 'object' && type !== 'object'){
+       delete propertyItem.properties
+       propertyItem.type = type
     }else{
-      propertyItem.type = type
+      if(type === 'object'){
+        propertyItem.type = type
+        propertyItem.properties = {}
+      }else{
+        propertyItem.type = type
+      }
     }
   }
 
   checkObjectType = (properties, id, type) => {
     Object.keys(properties).forEach(propertyKey => {
         let propertyItem = properties[propertyKey]
-        console.log(propertyKey)
         if(propertyItem.uuid === id){
           this.updateType(propertyItem, type)
         }else{
@@ -279,16 +282,21 @@ export default class App extends Component {
   onSetFieldType = (id, type) => {
     console.log("Updating type")
     let { schema } = this.state
-    Object.keys(schema.properties).forEach(propertyKey => {
-      let propertyItem = schema.properties[propertyKey]
-      if(propertyItem.uuid === id){
-        this.updateType(propertyItem, type)
-      }else{
-        if(propertyItem.type === 'object'){
-          this.checkObjectType(propertyItem.properties, id, type)
+    if(schema.uuid === id){
+      this.updateType(schema, type)
+    }else{
+      Object.keys(schema.properties).forEach(propertyKey => {
+        let propertyItem = schema.properties[propertyKey]
+        if(propertyItem.uuid === id){
+          this.updateType(propertyItem, type)
+        }else{
+          if(propertyItem.type === 'object'){
+            this.checkObjectType(propertyItem.properties, id, type)
+          }
         }
-      }
-    })
+      })
+    }
+    
     this.setState({schema})
   }
 
