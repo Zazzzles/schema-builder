@@ -114,14 +114,36 @@ export default class App extends Component {
       Object.keys(schemaObj.properties).forEach((key, index) => {
         let schemaItem = schemaObj.properties[key]
         if (schemaItem.type !== "object") {
-          toRender.push(<SchemaLevel type={schemaItem.type} name={key} id={schemaItem.uuid} key={key + index} onAddField={this.onAddInnerField} onSetFieldType={this.onSetFieldType} onKeyUpdate={this.onKeyUpdate} />)
+          toRender.push(
+
+          <SchemaLevel 
+          type={schemaItem.type} 
+          name={key} 
+          id={schemaItem.uuid} 
+          key={key + index} 
+          onAddField={this.onAddInnerField} 
+          onSetFieldType={this.onSetFieldType} 
+          onKeyUpdate={this.onKeyUpdate} 
+          handleFieldDelete={this.onDelete}
+
+          />
+
+          )
         } else {
           toRender.push(this.renderSchemaObject(schemaItem, key))
         }
       })
     }
       return (
-        <SchemaLevel type={schemaObj.type} name={'root'} id={schemaObj.uuid} onAddField={this.onAddInnerField} onSetFieldType={this.onSetFieldType} onKeyUpdate={this.onKeyUpdate}>
+        <SchemaLevel 
+        type={schemaObj.type} 
+        name={'root'} 
+        id={schemaObj.uuid} 
+        onAddField={this.onAddInnerField} 
+        onSetFieldType={this.onSetFieldType} 
+        onKeyUpdate={this.onKeyUpdate} 
+        handleFieldDelete={this.onDelete}>
+
           {toRender}
         </SchemaLevel>
       )
@@ -341,6 +363,11 @@ export default class App extends Component {
 
   //  END REMOVE IDS
 
+
+  onDelete = (id) => {
+    console.log('Delete')
+    
+  }
 
 
   uuid = () => {

@@ -65,12 +65,12 @@
     align-items: center;
 }
 
-.controls-container{
-    height: 20px;
-    width: 100px;
-    background-color: red;
-    display: flex;
-    justify-self: flex-end
+.delete-button{
+    height: 15px;
+    width: 15px;
+    cursor: pointer;
+    margin-right: 10px;
+    margin-left: 12px;
 }
 
 /*# sourceMappingURL=/schema-builder.e31bb0bc.css.map */

@@ -6,6 +6,7 @@ import Select from 'react-select'
 import '../styles/object.css'
 
 import AddButton from '../assets/add2.png'
+import DelButton from '../assets/del.png'
 
 
 const options = [
@@ -52,6 +53,11 @@ export default class SchemaLevel extends Component{
         onSetFieldType(id, item.value)
     }
 
+    handleDelete = () => {
+        const { handleFieldDelete, id } = this.props
+        handleFieldDelete(id)
+    }
+
     render(){
         //const { key } = this.state
         const { children, type, name } = this.props
@@ -79,10 +85,14 @@ export default class SchemaLevel extends Component{
                     onChange={this.handleSelect} 
                     className='select'
                 />
+                        <img 
+                        src={DelButton} 
+                        alt="Del" 
+                        onClick={this.handleDelete}
+                        className='delete-button'
+                        />
                 </div>
-                    {/* <div className='controls-container'>
-
-                    </div> */}
+                  
                 </div>
                 {children}
             </div>

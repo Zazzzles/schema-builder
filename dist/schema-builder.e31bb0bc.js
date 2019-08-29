@@ -39253,6 +39253,8 @@ module.hot.dispose(reloadCSS);
 module.hot.accept(reloadCSS);
 },{"_css_loader":"node_modules/parcel-bundler/src/builtins/css-loader.js"}],"assets/add2.png":[function(require,module,exports) {
 module.exports = "/add2.dc70d4cd.png";
+},{}],"assets/del.png":[function(require,module,exports) {
+module.exports = "/del.b88341fa.png";
 },{}],"components/SchemaLevel.js":[function(require,module,exports) {
 "use strict";
 
@@ -39268,6 +39270,8 @@ var _reactSelect = _interopRequireDefault(require("react-select"));
 require("../styles/object.css");
 
 var _add = _interopRequireDefault(require("../assets/add2.png"));
+
+var _del = _interopRequireDefault(require("../assets/del.png"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -39367,6 +39371,13 @@ function (_Component) {
       onSetFieldType(id, item.value);
     });
 
+    _defineProperty(_assertThisInitialized(_this), "handleDelete", function () {
+      var _this$props4 = _this.props,
+          handleFieldDelete = _this$props4.handleFieldDelete,
+          id = _this$props4.id;
+      handleFieldDelete(id);
+    });
+
     _this.state = {
       key: '',
       type: ''
@@ -39378,10 +39389,10 @@ function (_Component) {
     key: "render",
     value: function render() {
       //const { key } = this.state
-      var _this$props4 = this.props,
-          children = _this$props4.children,
-          type = _this$props4.type,
-          name = _this$props4.name;
+      var _this$props5 = this.props,
+          children = _this$props5.children,
+          type = _this$props5.type,
+          name = _this$props5.name;
       var hasChildren = children && children.length;
       var selected = options.filter(function (option) {
         return type === option.value;
@@ -39407,6 +39418,11 @@ function (_Component) {
         value: selected,
         onChange: this.handleSelect,
         className: "select"
+      }), _react.default.createElement("img", {
+        src: _del.default,
+        alt: "Del",
+        onClick: this.handleDelete,
+        className: "delete-button"
       }))), children);
     }
   }]);
@@ -39415,7 +39431,7 @@ function (_Component) {
 }(_react.Component);
 
 exports.default = SchemaLevel;
-},{"react":"node_modules/react/index.js","react-select":"node_modules/react-select/dist/react-select.browser.esm.js","../styles/object.css":"styles/object.css","../assets/add2.png":"assets/add2.png"}],"App.js":[function(require,module,exports) {
+},{"react":"node_modules/react/index.js","react-select":"node_modules/react-select/dist/react-select.browser.esm.js","../styles/object.css":"styles/object.css","../assets/add2.png":"assets/add2.png","../assets/del.png":"assets/del.png"}],"App.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -39562,7 +39578,8 @@ function (_Component) {
               key: key + index,
               onAddField: _this.onAddInnerField,
               onSetFieldType: _this.onSetFieldType,
-              onKeyUpdate: _this.onKeyUpdate
+              onKeyUpdate: _this.onKeyUpdate,
+              handleFieldDelete: _this.onDelete
             }));
           } else {
             toRender.push(_this.renderSchemaObject(schemaItem, key));
@@ -39576,7 +39593,8 @@ function (_Component) {
         id: schemaObj.uuid,
         onAddField: _this.onAddInnerField,
         onSetFieldType: _this.onSetFieldType,
-        onKeyUpdate: _this.onKeyUpdate
+        onKeyUpdate: _this.onKeyUpdate,
+        handleFieldDelete: _this.onDelete
       }, toRender);
     });
 
@@ -39760,6 +39778,10 @@ function (_Component) {
         }
       });
       return newSchema;
+    });
+
+    _defineProperty(_assertThisInitialized(_this), "onDelete", function (id) {
+      console.log('Delete');
     });
 
     _defineProperty(_assertThisInitialized(_this), "uuid", function () {
