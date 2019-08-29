@@ -365,6 +365,8 @@ export default class App extends Component {
 
 
   onDelete = (id) => {
+    const { schema } = this.state
+
     console.log('Delete')
     
   }

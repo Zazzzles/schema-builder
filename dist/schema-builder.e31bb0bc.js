@@ -39781,6 +39781,7 @@ function (_Component) {
     });
 
     _defineProperty(_assertThisInitialized(_this), "onDelete", function (id) {
+      var schema = _this.state.schema;
       console.log('Delete');
     });
 
