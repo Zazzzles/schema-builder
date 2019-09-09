@@ -39341,15 +39341,18 @@ function (_Component) {
     });
 
     _defineProperty(_assertThisInitialized(_this), "handleInputChange", function (event) {
+      _this.setState({
+        key: event.target.value
+      }); // onKeyUpdate(id, event.target.value)
+
+    });
+
+    _defineProperty(_assertThisInitialized(_this), "updateKey", function () {
       var _this$props = _this.props,
           onKeyUpdate = _this$props.onKeyUpdate,
           id = _this$props.id;
-
-      _this.setState({
-        key: event.target.value
-      });
-
-      onKeyUpdate(id, event.target.value);
+      var key = _this.state.key;
+      onKeyUpdate(id, key);
     });
 
     _defineProperty(_assertThisInitialized(_this), "handleFieldAdd", function () {
@@ -39388,7 +39391,7 @@ function (_Component) {
   _createClass(SchemaLevel, [{
     key: "render",
     value: function render() {
-      //const { key } = this.state
+      var key = this.state.key;
       var _this$props5 = this.props,
           children = _this$props5.children,
           type = _this$props5.type,
@@ -39411,7 +39414,8 @@ function (_Component) {
       }), _react.default.createElement("input", {
         className: "key-input",
         placeholder: "Key",
-        value: name,
+        value: key,
+        onBlur: this.updateKey,
         onChange: this.handleInputChange
       }), _react.default.createElement(_reactSelect.default, {
         options: options,
@@ -39567,23 +39571,6 @@ function (_Component) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(App).call(this, props));
 
-    _defineProperty(_assertThisInitialized(_this), "mapSchema", function (schema, id, mutatorFunc, additionalArgs) {
-      Object.keys(schema.properties).forEach(function (propertyKey) {
-        var propertyItem = schema.properties[propertyKey];
-
-        if (propertyItem.uuid === id) {
-          mutatorFunc.apply(_objectSpread({}, additionalArgs, {
-            propertyItem: propertyItem.properties,
-            context: _assertThisInitialized(_this)
-          }));
-        } else {
-          if (propertyItem.type === "object") {
-            _this.mapSchema(propertyItem, id, mutatorFunc);
-          }
-        }
-      });
-    });
-
     _defineProperty(_assertThisInitialized(_this), "renderInnerObjects", function (schemaObj, key) {
       var toRender = [];
 
@@ -39591,7 +39578,7 @@ function (_Component) {
         Object.keys(schemaObj.properties).forEach(function (key, index) {
           var schemaItem = schemaObj.properties[key];
 
-          if (schemaItem.type !== "object") {
+          if (schemaItem.type !== 'object') {
             toRender.push(_react.default.createElement(_SchemaLevel.default, {
               type: schemaItem.type,
               name: key,
@@ -39610,7 +39597,7 @@ function (_Component) {
 
       return _react.default.createElement(_SchemaLevel.default, {
         type: schemaObj.type,
-        name: "root",
+        name: 'root',
         id: schemaObj.uuid,
         onAddField: _this.onAddInnerField,
         onSetFieldType: _this.onSetFieldType,
@@ -39625,59 +39612,69 @@ function (_Component) {
       return toRender;
     });
 
-    _defineProperty(_assertThisInitialized(_this), "updateKey", function (properties, name, propertyKey) {
-      console.log(properties);
-      Object.defineProperty(properties, name, Object.getOwnPropertyDescriptor(properties, propertyKey));
-      delete properties[propertyKey];
-    });
-
-    _defineProperty(_assertThisInitialized(_this), "checkObjectKey", function (properties, id, name) {
-      Object.keys(properties).forEach(function (propertyKey) {
-        var propertyItem = properties[propertyKey];
-        console.log(propertyKey);
-
-        if (propertyItem.uuid === id) {
-          _this.updateKey(properties, name, propertyKey);
-        } else {
-          if (propertyItem.type === "object") {
-            _this.checkObjectKey(propertyItem.properties, id, name);
-          }
-        }
-      });
-    });
-
-    _defineProperty(_assertThisInitialized(_this), "onKeyUpdate", function (id, name) {
-      console.log("Updating key");
-      var schema = _this.state.schema;
+    _defineProperty(_assertThisInitialized(_this), "mapSchema", function (schema, id, mutatorFunc, additionalArgs) {
       Object.keys(schema.properties).forEach(function (propertyKey) {
         var propertyItem = schema.properties[propertyKey];
 
         if (propertyItem.uuid === id) {
-          _this.updateKey(schema.properties, name, propertyKey);
+          mutatorFunc.apply(_objectSpread({}, additionalArgs, {
+            propertyItem: propertyItem,
+            context: _assertThisInitialized(_this)
+          }));
         } else {
-          if (propertyItem.type === "object") {
-            _this.checkObjectKey(propertyItem.properties, id, name);
+          if (propertyItem.type === 'object') {
+            _this.mapSchema(propertyItem, id, mutatorFunc, additionalArgs);
           }
         }
       });
+    });
 
-      _this.setState({
-        schema: schema
-      });
+    _defineProperty(_assertThisInitialized(_this), "updateKey", function (properties, name, propertyKey) {// let newObj = {};
+      // Object.keys(properties).forEach(key => {
+      //   if (key === propertyKey) {
+      //     newObj[name] = properties[key];
+      //   } else {
+      //     newObj[key] = properties[key];
+      //   }
+      // });
+      // console.log(newObj)
+      // return newObj
+    });
+
+    _defineProperty(_assertThisInitialized(_this), "checkObjectKey", function (properties, id, name) {// Object.keys(properties).forEach(propertyKey => {
+      //   let propertyItem = properties[propertyKey]
+      //   if (propertyItem.uuid === id) {
+      //       properties = this.updateKey(properties, name, propertyKey)
+      //   } else {
+      //     if (propertyItem.type === "object") {
+      //       properties[propertyKey].properties = this.checkObjectKey(propertyItem.properties, id, name, propertyKey)
+      //     }
+      //   }
+      // })
+      // return properties
+    });
+
+    _defineProperty(_assertThisInitialized(_this), "onKeyUpdate", function (id, name) {
+      console.log('Updaing key'); // let { schema } = this.state
+      // console.log(schema);
+      // if (schema.uuid === id) {
+      //  schema.properties = this.updateKey( schema.properties, id,name )
+      // } else {
+      //   schema.properties = this.checkObjectKey(schema.properties, id,name )
+      // }
+      // this.setState({ schema })
     });
 
     _defineProperty(_assertThisInitialized(_this), "onAddInnerField", function (id) {
       var schema = _this.state.schema;
 
-      if (schema.uuid === id && schema.type === "object") {
+      if (schema.uuid === id && schema.type === 'object') {
         _this.addNewField.apply({
           propertyItem: schema,
           context: _assertThisInitialized(_this)
         });
       } else {
-        _this.mapSchema(schema, id, _this.addNewField, {
-          propertyItem: schema
-        });
+        _this.mapSchema(schema, id, _this.addNewField);
       }
 
       _this.setState({
@@ -39686,7 +39683,7 @@ function (_Component) {
     });
 
     _defineProperty(_assertThisInitialized(_this), "onSetFieldType", function (id, type) {
-      console.log("Updating type");
+      console.log('Updating type');
       var schema = _this.state.schema;
 
       if (schema.uuid === id) {
@@ -39697,17 +39694,7 @@ function (_Component) {
       } else {
         _this.mapSchema(schema, id, _this.updateType, {
           type: type
-        }); // Object.keys(schema.properties).forEach(propertyKey => {
-        //   let propertyItem = schema.properties[propertyKey]
-        //   if (propertyItem.uuid === id) {
-        //     this.updateType(propertyItem, type)
-        //   } else {
-        //     if (propertyItem.type === "object") {
-        //       this.checkObjectType(propertyItem.properties, id, type)
-        //     }
-        //   }
-        // })
-
+        });
       }
 
       _this.setState({
@@ -39723,7 +39710,7 @@ function (_Component) {
       Object.keys(schema.properties).forEach(function (propertyKey) {
         var propertyItem = schema.properties[propertyKey];
 
-        if (propertyItem.type === "object") {
+        if (propertyItem.type === 'object') {
           delete propertyItem.uuid;
 
           _this.removeIdsInner(propertyItem);
@@ -39739,7 +39726,7 @@ function (_Component) {
       Object.keys(newSchema.properties).forEach(function (propertyKey) {
         var propertyItem = newSchema.properties[propertyKey];
 
-        if (propertyItem.type === "object") {
+        if (propertyItem.type === 'object') {
           delete propertyItem.uuid;
 
           _this.removeIdsInner(propertyItem);
@@ -39751,13 +39738,13 @@ function (_Component) {
     });
 
     _defineProperty(_assertThisInitialized(_this), "onDelete", function (id) {
-      console.log("Delete");
+      console.log('Delete');
     });
 
     _defineProperty(_assertThisInitialized(_this), "uuid", function () {
-      return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
         var r = Math.random() * 16 | 0,
-            v = c == "x" ? r : r & 0x3 | 0x8;
+            v = c == 'x' ? r : r & 0x3 | 0x8;
         return v.toString(16);
       });
     });
@@ -39765,13 +39752,14 @@ function (_Component) {
     _this.bottomLevelUUID = _this.uuid();
     _this.state = {
       schema: {
-        type: "object",
+        type: 'object',
         uuid: _this.bottomLevelUUID,
         properties: {}
       }
     };
     return _this;
-  }
+  } //  OBJECT RENDERING
+
 
   _createClass(App, [{
     key: "addNewField",
@@ -39781,7 +39769,7 @@ function (_Component) {
       var propertyItem = this.propertyItem,
           context = this.context;
       propertyItem.properties[Object.keys(propertyItem.properties).length] = {
-        type: "string",
+        type: 'string',
         uuid: context.uuid()
       };
     }
@@ -39793,30 +39781,18 @@ function (_Component) {
       var propertyItem = this.propertyItem,
           type = this.type;
 
-      if (propertyItem.type === "object" && type !== "object") {
+      if (propertyItem.type === 'object' && type !== 'object') {
         delete propertyItem.properties;
         propertyItem.type = type;
       } else {
-        if (type === "object") {
+        if (type === 'object') {
           propertyItem.type = type;
           propertyItem.properties = {};
         } else {
           propertyItem.type = type;
         }
       }
-    } // checkObjectType = (properties, id, type) => {
-    //   Object.keys(properties).forEach(propertyKey => {
-    //     let propertyItem = properties[propertyKey]
-    //     if (propertyItem.uuid === id) {
-    //       this.updateType(propertyItem, type)
-    //     } else {
-    //       if (propertyItem.type === "object") {
-    //         this.checkObjectType(propertyItem.properties, id, type)
-    //       }
-    //     }
-    //   })
-    // }
-
+    }
   }, {
     key: "render",
     value: function render() {
@@ -39875,7 +39851,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57862" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51087" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
